@@ -1,6 +1,6 @@
 import { createServer } from 'http'
 import serverConfig from './configs/server.config.js'
-import createIo from './services/socket.service.js'
+import SocketService from './services/socket.service.js'
 import app from './services/express.service.js'
 import connectDatabase from './services/database.service.js'
 
@@ -9,7 +9,7 @@ try {
     console.log('Database connection established')
 
     const server = createServer(app)
-    const io = createIo(server)
+    new SocketService(server)
 
     server.listen(serverConfig.port, () => {
         console.log('Listening http and socket on *:3000')

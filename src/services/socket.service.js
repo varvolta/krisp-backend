@@ -1,17 +1,25 @@
 import { Server } from 'socket.io'
 
-const createIo = (server) => {
-    const io = new Server(server)
+class SocketService {
+    static instance
+    io
 
-    io.on('connection', (socket) => {
-        console.log('user connected', socket.id)
+    constructor(server) {
+        if (SocketService.instance) throw new Error('Only one instance is allowed')
 
-        socket.on('disconnect', () => {
-            console.log('user disconnected', socket.id)
+        const io = new Server(server)
+
+        io.on('connection', (socket) => {
+            console.log('user connected', socket.id)
+
+            socket.on('disconnect', () => {
+                console.log('user disconnected', socket.id)
+            })
         })
-    })
 
-    return io
+        this.io = io
+        SocketService.instance = this
+    }
 }
 
-export default createIo
+export default SocketService
