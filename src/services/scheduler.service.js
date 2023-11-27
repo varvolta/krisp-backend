@@ -1,38 +1,48 @@
 import Candidate from '../models/candidate.model.js'
 
-const queue = []
 let processing = false
 
-const process = async () => {
-    if (queue.length) {
-        processing = true
-        const item = queue.shift()
-        item.status = 'processing'
-        const now = Date.now()
+const process = async (candidate) => {
+    candidate ||= await Candidate.findOne({ status: 'pending' })
+    if (!candidate) return
 
-        // processing simulation for 50 ms
-        setTimeout(async () => {
-            item.status = 'completed'
-            item.processTime = Date.now() - now
+    processing = true
+    candidate.status = 'processing'
 
-            const candidate = new Candidate(item)
-
-            try {
-                await candidate.save()
-            } catch (error) {
-                console.error(error)
-            }
-
-            processing = false
-            await process()
-        }, 50)
+    try {
+        await candidate.save()
+    } catch (error) {
+        console.error(error)
     }
+
+    const now = Date.now()
+
+    // processing simulation for 50 ms
+    setTimeout(async () => {
+        candidate.status = 'completed'
+        candidate.processTime = Date.now() - now
+
+        try {
+            await candidate.save()
+        } catch (error) {
+            console.error(error)
+        }
+
+        processing = false
+        await process()
+    }, 50)
 }
 
-export const scheduleCandidate = (candidate) => {
-    candidate.status = 'pending'
-    queue.push(candidate)
-    if (!processing) {
-        process()
+export const scheduleCandidate = async (data) => {
+    data.status = 'pending'
+    const candidate = new Candidate(data)
+
+    try {
+        await candidate.save()
+        if (!processing) {
+            process(candidate)
+        }
+    } catch (error) {
+        console.error(error)
     }
 }
