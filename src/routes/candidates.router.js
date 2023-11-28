@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { create } from '../controllers/candidates.controller.js'
+import { createMany, getBySubscriptionId } from '../controllers/candidates.controller.js'
 
 const router = Router()
 
-router.post('/', create)
+router.get('/:id', getBySubscriptionId)
+router.post('/', createMany)
 
 export default router

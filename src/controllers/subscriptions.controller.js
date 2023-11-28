@@ -16,7 +16,7 @@ export const create = async (req, res) => {
     }
 }
 
-export const deleteOne = async (req, res) => {
+export const deleteById = async (req, res) => {
     const { id } = req.body
     try {
         await Subscription.findByIdAndDelete(id)

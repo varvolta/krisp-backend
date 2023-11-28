@@ -7,7 +7,7 @@ class SocketService {
     constructor(server) {
         if (SocketService.instance) throw new Error('Only one instance is allowed')
 
-        const io = new Server(server)
+        const io = new Server(server, { cors: { origin: '*' } })
 
         io.on('connection', (socket) => {
             console.log('user connected', socket.id)

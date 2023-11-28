@@ -1,10 +1,15 @@
 import Candidate from '../models/candidate.model.js'
+import SocketService from './socket.service.js'
 
 let processing = false
 
 const process = async (candidate) => {
     candidate ||= await Candidate.findOne({ status: 'pending' })
-    if (!candidate) return
+    if (!candidate) {
+        // check
+        SocketService.instance?.io.sockets.emit('fetch-candidates')
+        return
+    }
 
     processing = true
     candidate.status = 'processing'
